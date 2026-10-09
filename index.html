@@ -178,6 +178,9 @@ footer{text-align:center;color:var(--mute);font-size:12px;padding:0 20px 40px}
 <label class="l">Jenis acara *</label><select id="je"></select><label class="l">Paket *</label><select id="pk"></select><div class="pb" id="pb"></div><div id="dt"></div>
 <label class="l">Waktu acara</label><input id="wk" placeholder="Contoh: 08.00 - 14.00">
 <label class="l">Alamat / lokasi acara *</label><input id="al" autocomplete="street-address">
+<label class="l">Link lokasi Google Maps (opsional)</label><input id="gm" inputmode="url" autocomplete="off" placeholder="Tempel link Google Maps">
+<button type="button" class="sec" id="gmGeo">📍 Pakai lokasi saya sekarang</button><button type="button" class="sec" id="gmMap">🗺️ Pilih lokasi di Google Maps</button>
+<div class="mu" id="gmMsg" style="margin-top:6px">Pakai lokasi sekarang hanya jika kamu sedang di lokasi acara. Atau di Google Maps: pilih lokasi acara → Bagikan → Salin link, lalu tempel di kolom di atas.</div>
 <label class="l">No HP / WA *</label><input id="hp" type="tel" inputmode="tel" autocomplete="tel">
 <label class="l">Catatan (opsional)</label><textarea id="ct" rows="3"></textarea></div>
 <div class="c"><div style="font-weight:600;margin-bottom:4px">Tambahan (opsional)</div><div id="ak"></div></div>
@@ -312,7 +315,7 @@ function upd(e){const id=e&&e.target.id;if(id=="je")pko();const x=sel();if(id=="
 const t=tot(),d=+G("dp").value||0;G("tot").textContent=rp(t.p+t.a+t.t+t.u+t.l);G("br").textContent=`Paket ${rp(t.p)} + Tambahan ${rp(t.a)} + Transport ${rp(t.t)} + Durasi ${rp(t.u)} + Album ${rp(t.l)}`;G("dpi").textContent=d?"DP (info saja): "+rp(d):""}
 function valid(){const x=sel();if(!G("nw").value.trim())return"Nama mempelai wanita wajib diisi";if(!G("np").value.trim())return"Nama mempelai pria wajib diisi";if(!G("je").value)return"Pilih jenis acara dulu";if(!x)return"Pilih paket dulu";if(!G("d1").value||(two(x[0])&&!G("d2").value))return"Tanggal acara wajib diisi";if(!G("al").value.trim())return"Alamat acara wajib diisi";if(!G("hp").value.trim())return"No HP/WA wajib diisi";return""}
 function msg(){const x=sel(),a=adds(),t=tot(),c=x[0],L=isAR(c)?["Akad Nikah","Resepsi"]:[c],d=+G("dp").value||0,ct=G("ct").value.trim().replace(/\s*\n\s*/g," / ");
-return["*Qullafoto Data Form*","","Mempelai Wanita : "+G("nw").value.trim(),"Mempelai Pria : "+G("np").value.trim(),"Tanggal Acara",...L.map((l,i)=>l+" : "+idt(G("d"+(two(c)?i+1:1)).value)),"Waktu : "+(G("wk").value.trim()||"-"),"Alamat : "+G("al").value.trim(),"Paket : "+c+" · "+x[1],"Harga Paket : "+rp(x[2]),"Isi Paket : "+x[3],...(a.length?["Tambahan : "+a.map(y=>y[0]+" ("+(y[1]?rp(y[1]):"GRATIS")+")").join(" ; ")]:[]),...(t.t?["Transport : "+rp(t.t)]:[]),...(t.u?["Tambahan Durasi : "+rp(t.u)]:[]),...(t.l?["Tambah Print + Album : "+(t.l/500000)+" album ("+rp(t.l)+")"]:[]),...(ct?["Catatan : "+ct]:[]),"No Hp / WA : "+G("hp").value.trim(),"Total : "+rp(t.p+t.a+t.t+t.u+t.l),...(d?["DP : "+rp(d)]:[])].join("\n")}
+return["*Qullafoto Data Form*","","Mempelai Wanita : "+G("nw").value.trim(),"Mempelai Pria : "+G("np").value.trim(),"Tanggal Acara",...L.map((l,i)=>l+" : "+idt(G("d"+(two(c)?i+1:1)).value)),"Waktu : "+(G("wk").value.trim()||"-"),"Alamat : "+G("al").value.trim(),...(G("gm").value.trim()?["Lokasi Maps : "+G("gm").value.trim()]:[]),"Paket : "+c+" · "+x[1],"Harga Paket : "+rp(x[2]),"Isi Paket : "+x[3],...(a.length?["Tambahan : "+a.map(y=>y[0]+" ("+(y[1]?rp(y[1]):"GRATIS")+")").join(" ; ")]:[]),...(t.t?["Transport : "+rp(t.t)]:[]),...(t.u?["Tambahan Durasi : "+rp(t.u)]:[]),...(t.l?["Tambah Print + Album : "+(t.l/500000)+" album ("+rp(t.l)+")"]:[]),...(ct?["Catatan : "+ct]:[]),"No Hp / WA : "+G("hp").value.trim(),"Total : "+rp(t.p+t.a+t.t+t.u+t.l),...(d?["DP : "+rp(d)]:[])].join("\n")}
 const say=(t,ok)=>{G("er").textContent=t;G("er").style.color=ok?"#25a244":"#c0392b"};
 G("bk").addEventListener("input",upd);G("bk").addEventListener("change",upd);pko();dts();ako();upd();
 const BANK="BRI",REK="4527-0100-2012-506",AN="ACHMAD AFFANDI";G("rb").textContent=BANK+" · a/n "+AN;G("rk").textContent=REK;
@@ -323,6 +326,10 @@ G("cp").onclick=async()=>{const m=valid();say(m);if(m)return;try{await navigator
 
 const ov=G("bk");
 const show=()=>{ov.classList.add("on");ov.setAttribute("aria-hidden","false");document.body.style.overflow="hidden";ov.scrollTop=0},hide=()=>{ov.classList.remove("on");ov.setAttribute("aria-hidden","true");document.body.style.overflow=""};
+G("gmMap").onclick=()=>window.open("https://www.google.com/maps","_blank","noopener");
+G("gmGeo").onclick=()=>{const m=G("gmMsg");m.textContent="Mencari lokasi…";
+ if(!navigator.geolocation){m.textContent="Perangkat tidak mendukung lokasi. Pilih lokasi lewat Google Maps.";return}
+ navigator.geolocation.getCurrentPosition(p=>{G("gm").value="https://www.google.com/maps?q="+p.coords.latitude.toFixed(6)+","+p.coords.longitude.toFixed(6);m.textContent="Lokasi ditemukan ✓ Link sudah terisi dan akan ikut di pesan WhatsApp."},()=>{m.textContent="Lokasi tidak bisa diakses. Pilih lokasi lewat Google Maps lalu tempel linknya."},{enableHighAccuracy:true,timeout:12000})};
 window.openBooking=(i,s)=>{const x=PK[i];if(!x)return;G("je").value=x[0];upd({target:G("je")});G("pk").value=i;upd({target:G("pk")});
  document.querySelectorAll("#ak input").forEach(c=>{if(c.dataset.n==="Video Cinematic")c.checked=!!s.v;else if(/QR/i.test(c.dataset.n)&&+c.dataset.p>0)c.checked=!!s.q});
  G("du").value=s.h?s.h*100000:"";G("ad").value=s.a||"";upd();show();try{history.pushState({bk:1},"")}catch(e){}};
